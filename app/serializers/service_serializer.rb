@@ -1,6 +1,14 @@
 class ServiceSerializer
   include JSONAPI::Serializer
 
+  attribute :vendor_id do |service|
+    service.vendor_id
+  end
+
+  attribute :vendor_name do |service|
+    service.vendor.name
+  end
+
   attributes :name, :start_date, :expiry_date, :payment_due_date, :amount
 
   attribute :is_active do |service|

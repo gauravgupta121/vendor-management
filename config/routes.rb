@@ -9,6 +9,11 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :vendors, only: [ :index ]
+      resources :services, only: [] do
+        collection do
+          get :expiring_soon
+        end
+      end
     end
   end
 
