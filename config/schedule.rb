@@ -9,5 +9,5 @@ set :output, "log/cron.log"
 
 # Define the job
 every 1.day, at: "9:00 am" do
-  rake "reminders:daily"
+  rake "reminders:expiring_and_due_services"
 end

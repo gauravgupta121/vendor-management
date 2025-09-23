@@ -1,6 +1,6 @@
 namespace :reminders do
   desc "Check and send daily reminder emails for expiring services and payment due dates"
-  task daily: :environment do
+  task expiring_and_due_services: :environment do
     puts "Starting daily reminder check at #{Time.current}"
 
     begin

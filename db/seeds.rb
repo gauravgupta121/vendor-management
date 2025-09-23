@@ -1,10 +1,21 @@
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
 # Clear existing data
+User.destroy_all
 Vendor.destroy_all
 Service.destroy_all
 
 puts "Cleared existing data"
+
+# Create admin user
+admin_user = User.create!(
+  name: "Admin User",
+  email: "admin@vendor-management.com",
+  password: "password123",
+  password_confirmation: "password123"
+)
+
+puts "Created admin user: #{admin_user.email}"
 
 # Predefined service names to avoid uniqueness conflicts
 service_names = [
@@ -99,6 +110,7 @@ vendors_with_services = Vendor.joins(:services).distinct.count
 vendors_without_services = Vendor.left_joins(:services).where(services: { id: nil }).count
 
 puts "\nSeed Data Summary:"
+puts "   Total Users: #{User.count}"
 puts "   Total Vendors: #{Vendor.count}"
 puts "   Active Vendors: #{active_vendors}"
 puts "   Inactive Vendors: #{inactive_vendors}"
