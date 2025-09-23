@@ -1,0 +1,71 @@
+<p>Hello,</p>
+<p>Here is a summary of vendor services nearing expiry or payment due:</p>
+
+<% if @expiring_services.any? %>
+  <h2 class="section-title">Expiring Services (within 15 days)</h2>
+  <table class="reminder-table">
+    <thead>
+      <tr>
+        <th>Vendor Name</th>
+        <th>Service Name</th>
+        <th>Expiry Date</th>
+        <th>Days Left</th>
+        <th>Amount</th>
+        <th>Urgency</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @expiring_services.each do |service| %>
+        <tr class="urgency-<%= urgency_level(service.expiry_date) %>">
+          <td><%= service.vendor.name %></td>
+          <td><%= service.name %></td>
+          <td><%= service.expiry_date.strftime("%Y-%m-%d") %></td>
+          <td><%= (service.expiry_date - Date.current).to_i %></td>
+          <td><%= number_to_currency(service.amount) %></td>
+          <td><%= urgency_level(service.expiry_date).capitalize %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <h2 class="section-title">Expiring Services (within 15 days)</h2>
+  <div class="no-data">
+    <p>No expiring services available.</p>
+  </div>
+<% end %>
+
+<% if @payment_due_services.any? %>
+  <h2 class="section-title">Payment Due Services (within 15 days)</h2>
+  <table class="reminder-table">
+    <thead>
+      <tr>
+        <th>Vendor Name</th>
+        <th>Service Name</th>
+        <th>Payment Due Date</th>
+        <th>Days Left</th>
+        <th>Amount</th>
+        <th>Urgency</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @payment_due_services.each do |service| %>
+        <tr class="urgency-<%= urgency_level(service.payment_due_date) %>">
+          <td><%= service.vendor.name %></td>
+          <td><%= service.name %></td>
+          <td><%= service.payment_due_date.strftime("%Y-%m-%d") %></td>
+          <td><%= (service.payment_due_date - Date.current).to_i %></td>
+          <td><%= number_to_currency(service.amount) %></td>
+          <td><%= urgency_level(service.payment_due_date).capitalize %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <h2 class="section-title">Payment Due Services (within 15 days)</h2>
+  <div class="no-data">
+    <p>No due services available.</p>
+  </div>
+<% end %>
+
+<p>Thank you,</p>
+<p>Your Vendor Management Team</p>
