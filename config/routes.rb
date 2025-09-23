@@ -8,6 +8,10 @@ Rails.application.routes.draw do
   # API routes with versioning
   namespace :api do
     namespace :v1 do
+      # Authentication routes (no auth required)
+      post "auth/register", to: "auth#register"
+      post "auth/login", to: "auth#login"
+      # Protected routes (auth required)
       resources :vendors, only: [ :index ]
       resources :services, only: [] do
         collection do

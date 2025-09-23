@@ -1,10 +1,14 @@
 class Api::V1::BaseController < ApplicationController
   # CSRF protection is not needed for API controllers
+  before_action :authenticate_request
 
   # Handle common API errors
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
   rescue_from ActiveRecord::RecordInvalid, with: :record_invalid
   rescue_from StandardError, with: :internal_server_error
+  rescue_from ExceptionHandler::AuthenticationError, with: :unauthorized_request
+  rescue_from ExceptionHandler::MissingToken, with: :unauthorized_request
+  rescue_from ExceptionHandler::InvalidToken, with: :unauthorized_request
 
   protected
 
@@ -23,6 +27,26 @@ class Api::V1::BaseController < ApplicationController
   end
 
   private
+
+  def authenticate_request
+    @current_user = AuthorizeApiRequest.new(request.headers).call[:user]
+  end
+
+  def current_user
+    @current_user
+  end
+
+  def unauthorized_request(exception)
+    render json: {
+      errors: [
+        {
+          status: "401",
+          title: "Unauthorized",
+          detail: exception.message
+        }
+      ]
+    }, status: :unauthorized
+  end
 
   def record_not_found(exception)
     render json: {
