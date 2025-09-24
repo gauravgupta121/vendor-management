@@ -49,6 +49,9 @@ group :development, :test do
 
   # Preview emails in browser during development
   gem "letter_opener"
+
+  # Factory for creating test data
+  gem "factory_bot_rails"
 end
 
 # Cron job management

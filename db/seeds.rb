@@ -35,8 +35,8 @@ service_names = [
 ]
 
 # Company name prefixes and suffixes for variety
-company_prefixes = ["Tech", "Digital", "Cloud", "Data", "Smart", "Pro", "Elite", "Prime", "Global", "Advanced"]
-company_suffixes = ["Solutions", "Systems", "Technologies", "Services", "Corp", "Ltd", "Inc", "Group", "Partners", "Works"]
+company_prefixes = [ "Tech", "Digital", "Cloud", "Data", "Smart", "Pro", "Elite", "Prime", "Global", "Advanced" ]
+company_suffixes = [ "Solutions", "Systems", "Technologies", "Services", "Corp", "Ltd", "Inc", "Group", "Partners", "Works" ]
 
 # Create 50 vendors
 vendors = []
@@ -54,10 +54,10 @@ vendors = []
 
   vendor = Vendor.create!(
     name: company_name,
-    spoc: "#{["John", "Jane", "Mike", "Sarah", "David", "Lisa", "Chris", "Amy", "Tom", "Emma"].sample} #{["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez"].sample}",
+    spoc: "#{[ "John", "Jane", "Mike", "Sarah", "David", "Lisa", "Chris", "Amy", "Tom", "Emma" ].sample} #{[ "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez" ].sample}",
     email: "contact@#{company_name.downcase.gsub(/\s+/, "")}.com",
     phone: "#{rand(1000000000..9999999999)}",
-    status: ["active", "inactive"].sample
+    status: [ "active", "inactive" ].sample
   )
 
   vendors << vendor

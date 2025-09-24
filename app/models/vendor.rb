@@ -16,8 +16,8 @@ class Vendor < ApplicationRecord
             length: { is: 10 }
 
   # Callbacks
-  before_save :normalize_email
-  before_save :normalize_phone
+  before_validation :normalize_email
+  before_validation :normalize_phone
 
   private
 
@@ -26,6 +26,6 @@ class Vendor < ApplicationRecord
   end
 
   def normalize_phone
-    self.phone = phone.gsub(/\D/, '') if phone.present?
+    self.phone = phone.gsub(/\D/, "") if phone.present?
   end
 end

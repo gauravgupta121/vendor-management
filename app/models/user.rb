@@ -7,7 +7,7 @@ class User < ApplicationRecord
   validates :name, presence: true, length: { minimum: 2, maximum: 100 }
   validates :password, presence: true, length: { minimum: 6 }, on: :create
 
-  before_save :normalize_email
+  before_validation :normalize_email
 
   private
 
