@@ -68,6 +68,35 @@ All protected endpoints require JWT authentication via the `Authorization` heade
 Authorization: <your-jwt-token>
 ```
 
+### API Endpoints Summary
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| POST | `/api/v1/auth/register` | Register a new user | No |
+| POST | `/api/v1/auth/login` | Login user | No |
+| GET | `/api/v1/vendors` | List all vendors | Yes |
+| GET | `/api/v1/vendors/:id` | Get single vendor | Yes |
+| POST | `/api/v1/vendors` | Create new vendor | Yes |
+| PATCH | `/api/v1/vendors/:id` | Update vendor | Yes |
+| DELETE | `/api/v1/vendors/:id` | Delete vendor | Yes |
+| GET | `/api/v1/services/expiring_services` | Get expiring services | Yes |
+| GET | `/api/v1/services/upcoming_payments` | Get upcoming payments | Yes |
+| PATCH | `/api/v1/services/:id/update_status` | Update service status | Yes |
+| GET | `/up` | Health check | No |
+
+### Health Check
+
+The application provides a health check endpoint for monitoring:
+
+```http
+GET /up
+```
+
+**Response:**
+```
+HTTP 200 OK
+```
+
 ### Endpoints
 
 #### 1. User Registration
@@ -204,9 +233,195 @@ Authorization: Bearer <token>
 }
 ```
 
-#### 4. Get Expiring Services (Protected)
+#### 4. Get Single Vendor (Protected)
 ```http
-GET /api/v1/services/expiring_soon?page=1&per_page=10
+GET /api/v1/vendors/1
+Authorization: Bearer <token>
+```
+
+**Response:**
+```json
+{
+  "data": {
+    "id": "1",
+    "type": "vendor",
+    "attributes": {
+      "name": "Tech Solutions",
+      "spoc": "John Smith",
+      "email": "contact@techsolutions.com",
+      "phone": "9876543210",
+      "status": "active",
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-01T00:00:00.000Z"
+    },
+    "relationships": {
+      "services": {
+        "data": [
+          {
+            "id": "1",
+            "type": "service"
+          }
+        ]
+      }
+    }
+  },
+  "included": [
+    {
+      "id": "1",
+      "type": "service",
+      "attributes": {
+        "name": "Web Development",
+        "start_date": "2024-01-01",
+        "expiry_date": "2024-12-31",
+        "payment_due_date": "2024-01-15",
+        "amount": "5000.00",
+        "status": "active",
+        "vendor_id": 1,
+        "vendor_name": "Tech Solutions",
+        "is_active": true,
+        "is_payment_due": false,
+        "urgency_level": "normal",
+        "color_code": "#6c757d",
+        "days_until_expiry": 365,
+        "days_until_payment_due": 14
+      }
+    }
+  ]
+}
+```
+
+#### 5. Create Vendor (Protected)
+```http
+POST /api/v1/vendors
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "vendor": {
+    "name": "New Tech Corp",
+    "spoc": "Jane Doe",
+    "email": "jane@newtech.com",
+    "phone": "9876543210",
+    "status": "active",
+    "services_attributes": [
+      {
+        "name": "Mobile App Development",
+        "start_date": "2024-02-01",
+        "expiry_date": "2024-12-31",
+        "payment_due_date": "2024-02-15",
+        "amount": "8000.00"
+      }
+    ]
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "data": {
+    "id": "2",
+    "type": "vendor",
+    "attributes": {
+      "name": "New Tech Corp",
+      "spoc": "Jane Doe",
+      "email": "jane@newtech.com",
+      "phone": "9876543210",
+      "status": "active",
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-01T00:00:00.000Z"
+    },
+    "relationships": {
+      "services": {
+        "data": [
+          {
+            "id": "2",
+            "type": "service"
+          }
+        ]
+      }
+    }
+  },
+  "included": [
+    {
+      "id": "2",
+      "type": "service",
+      "attributes": {
+        "name": "Mobile App Development",
+        "start_date": "2024-02-01",
+        "expiry_date": "2024-12-31",
+        "payment_due_date": "2024-02-15",
+        "amount": "8000.00",
+        "status": "active",
+        "vendor_id": 2,
+        "vendor_name": "New Tech Corp",
+        "is_active": true,
+        "is_payment_due": false,
+        "urgency_level": "normal",
+        "color_code": "#6c757d",
+        "days_until_expiry": 365,
+        "days_until_payment_due": 14
+      }
+    }
+  ]
+}
+```
+
+#### 6. Update Vendor (Protected)
+```http
+PATCH /api/v1/vendors/1
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "vendor": {
+    "name": "Updated Tech Solutions",
+    "spoc": "Updated John Smith",
+    "email": "updated@techsolutions.com",
+    "phone": "9876543210",
+    "status": "active"
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "data": {
+    "id": "1",
+    "type": "vendor",
+    "attributes": {
+      "name": "Updated Tech Solutions",
+      "spoc": "Updated John Smith",
+      "email": "updated@techsolutions.com",
+      "phone": "9876543210",
+      "status": "active",
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-01T12:00:00.000Z"
+    },
+    "relationships": {
+      "services": {
+        "data": []
+      }
+    }
+  }
+}
+```
+
+#### 7. Delete Vendor (Protected)
+```http
+DELETE /api/v1/vendors/1
+Authorization: Bearer <token>
+```
+
+**Response:**
+```
+HTTP 204 No Content
+```
+
+#### 8. Get Expiring Services (Protected)
+```http
+GET /api/v1/services/expiring_services?page=1&per_page=10
 Authorization: Bearer <token>
 ```
 
@@ -223,6 +438,7 @@ Authorization: Bearer <token>
         "expiry_date": "2024-01-15",
         "payment_due_date": "2024-01-10",
         "amount": "5000.00",
+        "status": "active",
         "vendor_id": 1,
         "vendor_name": "Tech Solutions",
         "is_active": true,
@@ -247,10 +463,107 @@ Authorization: Bearer <token>
 }
 ```
 
+#### 9. Get Upcoming Payments (Protected)
+```http
+GET /api/v1/services/upcoming_payments?page=1&per_page=10
+Authorization: Bearer <token>
+```
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "id": "2",
+      "type": "service",
+      "attributes": {
+        "name": "Mobile App Development",
+        "start_date": "2024-01-01",
+        "expiry_date": "2024-12-31",
+        "payment_due_date": "2024-01-20",
+        "amount": "8000.00",
+        "status": "active",
+        "vendor_id": 2,
+        "vendor_name": "New Tech Corp",
+        "is_active": true,
+        "is_payment_due": false,
+        "urgency_level": "warning",
+        "color_code": "#ffc107",
+        "days_until_expiry": 365,
+        "days_until_payment_due": 5
+      }
+    }
+  ],
+  "meta": {
+    "pagination": {
+      "current_page": 1,
+      "next_page": null,
+      "prev_page": null,
+      "total_pages": 1,
+      "total_count": 1,
+      "per_page": 10
+    }
+  }
+}
+```
+
+#### 10. Update Service Status (Protected)
+```http
+PATCH /api/v1/services/1/update_status
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "service": {
+    "status": "completed"
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "data": {
+    "id": "1",
+    "type": "service",
+    "attributes": {
+      "name": "Web Development",
+      "start_date": "2024-01-01",
+      "expiry_date": "2024-12-31",
+      "payment_due_date": "2024-01-15",
+      "amount": "5000.00",
+      "status": "completed",
+      "vendor_id": 1,
+      "vendor_name": "Tech Solutions",
+      "is_active": false,
+      "is_payment_due": false,
+      "urgency_level": "normal",
+      "color_code": "#6c757d",
+      "days_until_expiry": 365,
+      "days_until_payment_due": 14
+    }
+  }
+}
+```
+
 ### Error Responses
 
-All endpoints return consistent error responses:
+All endpoints return consistent error responses following the JSON API specification:
 
+#### 400 Bad Request
+```json
+{
+  "errors": [
+    {
+      "status": "400",
+      "title": "Bad Request",
+      "detail": "Invalid request parameters"
+    }
+  ]
+}
+```
+
+#### 401 Unauthorized
 ```json
 {
   "errors": [
@@ -262,6 +575,80 @@ All endpoints return consistent error responses:
   ]
 }
 ```
+
+#### 404 Not Found
+```json
+{
+  "errors": [
+    {
+      "status": "404",
+      "title": "Error",
+      "detail": "Vendor not found"
+    }
+  ]
+}
+```
+
+#### 422 Unprocessable Entity (Validation Errors)
+```json
+{
+  "errors": [
+    {
+      "status": "422",
+      "title": "Validation Error",
+      "detail": "Name can't be blank",
+      "source": {
+        "pointer": "/data/attributes/name"
+      }
+    },
+    {
+      "status": "422",
+      "title": "Validation Error",
+      "detail": "Email is invalid",
+      "source": {
+        "pointer": "/data/attributes/email"
+      }
+    }
+  ]
+}
+```
+
+#### 500 Internal Server Error
+```json
+{
+  "errors": [
+    {
+      "status": "500",
+      "title": "Error",
+      "detail": "Something went wrong"
+    }
+  ]
+}
+```
+
+### Query Parameters
+
+#### Pagination
+All list endpoints support pagination:
+- `page` - Page number (default: 1)
+- `per_page` - Items per page (default: 25, max: 100)
+
+#### Vendor List Filters
+- `active_services` - Filter services by status (true/false)
+
+### Service Status Values
+
+Services can have the following status values:
+- `active` - Service is currently active
+- `expired` - Service has expired
+- `payment_pending` - Payment is due
+- `completed` - Service is completed
+
+### Vendor Status Values
+
+Vendors can have the following status values:
+- `active` - Vendor is active
+- `inactive` - Vendor is inactive
 
 ## Design Choices
 
@@ -295,6 +682,7 @@ CREATE TABLE services (
   expiry_date DATE NOT NULL,
   payment_due_date DATE NOT NULL,
   amount DECIMAL(10,2),
+  status VARCHAR NOT NULL DEFAULT 'active',
   created_at TIMESTAMP,
   updated_at TIMESTAMP
 );
@@ -303,6 +691,7 @@ CREATE TABLE services (
 CREATE INDEX index_services_on_vendor_id ON services(vendor_id);
 CREATE INDEX index_services_on_expiry_date ON services(expiry_date);
 CREATE INDEX index_services_on_payment_due_date ON services(payment_due_date);
+CREATE INDEX index_services_on_status ON services(status);
 CREATE INDEX index_services_on_vendor_name ON services(vendor_id, name);
 ```
 
