@@ -1,6 +1,7 @@
 class Vendor < ApplicationRecord
   # Associations
   has_many :services, dependent: :destroy
+  accepts_nested_attributes_for :services, allow_destroy: true
 
   # Enum
   enum :status, { active: "active", inactive: "inactive" }

@@ -2,6 +2,14 @@ class Service < ApplicationRecord
   # Associations
   belongs_to :vendor
 
+  # Enum
+  enum :status, {
+    active: "active",
+    expired: "expired",
+    payment_pending: "payment_pending",
+    completed: "completed"
+  }
+
   # Validations
   validates :name, presence: true
   validates :start_date, presence: true
@@ -9,6 +17,7 @@ class Service < ApplicationRecord
   validates :payment_due_date, presence: true
   validates :amount, presence: true,
             numericality: { greater_than: 0, less_than: 99999999.99 }
+  validates :status, presence: true, inclusion: { in: statuses.keys }
 
   # Custom validations
   validate :expiry_date_after_start_date
@@ -16,11 +25,9 @@ class Service < ApplicationRecord
   validate :unique_service_name_per_vendor
 
   # Scopes
-  scope :active, -> { where("expiry_date >= ?", Date.current) }
-  scope :expired, -> { where("expiry_date < ?", Date.current) }
   scope :payment_due, -> { where("payment_due_date <= ?", Date.current) }
-  scope :upcoming_payment, -> { where("payment_due_date BETWEEN ? AND ?", Date.current, 15.days.from_now) }
-  scope :expiring_in, ->(days) { where("expiry_date BETWEEN ? AND ?", Date.current, days.days.from_now) }
+  scope :upcoming_payment_in, ->(days = 15) { where("payment_due_date BETWEEN ? AND ?", Date.current, days.days.from_now) }
+  scope :expiring_in, ->(days = 15) { where("expiry_date BETWEEN ? AND ?", Date.current, days.days.from_now) }
 
   private
 

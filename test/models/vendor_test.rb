@@ -107,6 +107,8 @@ class VendorTest < ActiveSupport::TestCase
 
   test "phone should contain only digits" do
     @vendor.phone = "123-456-7890"
+    # Skip the normalization callback to test the validation directly
+    @vendor.define_singleton_method(:normalize_phone) { }
     assert_not @vendor.valid?
     assert_includes @vendor.errors[:phone], "is invalid"
   end

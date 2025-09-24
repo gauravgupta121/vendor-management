@@ -23,9 +23,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_24_030000) do
     t.decimal "amount", precision: 10, scale: 2
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "status", default: "active"
     t.index ["expiry_date"], name: "index_services_on_expiry_date"
     t.index ["payment_due_date"], name: "index_services_on_payment_due_date"
     t.index ["start_date"], name: "index_services_on_start_date"
+    t.index ["status"], name: "index_services_on_status"
     t.index ["vendor_id", "name"], name: "index_services_on_vendor_id_and_name"
     t.index ["vendor_id"], name: "index_services_on_vendor_id"
   end

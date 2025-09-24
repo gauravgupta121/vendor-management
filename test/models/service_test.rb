@@ -51,6 +51,25 @@ class ServiceTest < ActiveSupport::TestCase
     assert_includes @service.errors[:amount], "must be greater than 0"
   end
 
+  test "status should be present and valid" do
+    @service.status = nil
+    assert_not @service.valid?
+    assert_includes @service.errors[:status], "can't be blank"
+
+    assert_raises(ArgumentError, "'invalid_status' is not a valid status") do
+      @service.status = "invalid_status"
+    end
+  end
+
+  test "status should accept valid enum values" do
+    valid_statuses = %w[active expired payment_pending completed]
+
+    valid_statuses.each do |status|
+      @service.status = status
+      assert @service.valid?, "#{status} should be valid"
+    end
+  end
+
   # Custom Validation Tests
   test "expiry_date should be after start_date" do
     @service.expiry_date = @service.start_date
@@ -91,7 +110,7 @@ class ServiceTest < ActiveSupport::TestCase
 
   # Scope Tests
   test "active scope should return services with expiry_date >= current date" do
-    active_service = create(:service, :expiring_soon)
+    active_service = create(:service, :active)
     expired_service = create(:service, :expired)
 
     active_services = Service.active
@@ -100,7 +119,7 @@ class ServiceTest < ActiveSupport::TestCase
   end
 
   test "expired scope should return services with expiry_date < current date" do
-    active_service = create(:service, :expiring_soon)
+    active_service = create(:service, :active)
     expired_service = create(:service, :expired)
 
     expired_services = Service.expired
@@ -109,12 +128,37 @@ class ServiceTest < ActiveSupport::TestCase
   end
 
   test "payment_due scope should return services with payment_due_date <= current date" do
-    due_service = create(:service, :payment_overdue)
-    future_due_service = create(:service, :payment_due_soon)
+    due_service = create(:service, :payment_pending)
+    future_due_service = create(:service, :active)
 
     due_services = Service.payment_due
     assert_includes due_services, due_service
     assert_not_includes due_services, future_due_service
+  end
+
+  # Status-based tests
+  test "should create service with active status" do
+    service = create(:service, :active)
+    assert_equal "active", service.status
+    assert service.active?
+  end
+
+  test "should create service with expired status" do
+    service = create(:service, :expired)
+    assert_equal "expired", service.status
+    assert service.expired?
+  end
+
+  test "should create service with payment_pending status" do
+    service = create(:service, :payment_pending)
+    assert_equal "payment_pending", service.status
+    assert service.payment_pending?
+  end
+
+  test "should create service with completed status" do
+    service = create(:service, :completed)
+    assert_equal "completed", service.status
+    assert service.completed?
   end
 
   test "expiring_in scope should return services expiring within specified days" do

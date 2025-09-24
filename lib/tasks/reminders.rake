@@ -6,12 +6,12 @@ namespace :reminders do
     begin
       # Get services expiring in next 15 days
       expiring_services = Service.includes(:vendor)
-                                .where(expiry_date: Date.current..15.days.from_now)
+                                .expiring_in
                                 .order(:expiry_date)
 
       # Get services with payments due in next 15 days
       payment_due_services = Service.includes(:vendor)
-                                   .where(payment_due_date: Date.current..15.days.from_now)
+                                   .upcoming_payment_in
                                    .order(:payment_due_date)
 
       # Send emails only if there are services that need attention

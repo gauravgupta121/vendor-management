@@ -9,17 +9,9 @@ class ServiceSerializer
     service.vendor.name
   end
 
-  attributes :name, :start_date, :expiry_date, :payment_due_date, :amount
-
-  attribute :is_active do |service|
-    service.expiry_date >= Date.current
-  end
+  attributes :name, :status, :start_date, :expiry_date, :payment_due_date, :amount
 
   attribute :days_until_expiry do |service|
     (service.expiry_date - Date.current).to_i
-  end
-
-  attribute :is_payment_due do |service|
-    service.payment_due_date <= Date.current
   end
 end

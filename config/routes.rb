@@ -12,10 +12,14 @@ Rails.application.routes.draw do
       post "auth/register", to: "auth#register"
       post "auth/login", to: "auth#login"
       # Protected routes (auth required)
-      resources :vendors, only: [ :index ]
+      resources :vendors
       resources :services, only: [] do
         collection do
-          get :expiring_soon
+          get :expiring_services
+          get :upcoming_payments
+        end
+        member do
+          patch :update_status
         end
       end
     end

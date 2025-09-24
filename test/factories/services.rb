@@ -6,7 +6,35 @@ FactoryBot.define do
     expiry_date { 1.year.from_now }
     payment_due_date { 1.month.from_now }
     amount { 5000.00 }
+    status { "active" }
 
+    # Status-based traits
+    trait :active do
+      status { "active" }
+      expiry_date { 1.year.from_now }
+    end
+
+    trait :expired do
+      status { "expired" }
+      start_date { 1.year.ago }
+      expiry_date { 1.day.ago }
+      payment_due_date { 6.months.ago }
+    end
+
+    trait :payment_pending do
+      status { "payment_pending" }
+      start_date { 1.month.ago }
+      payment_due_date { 5.days.ago }
+    end
+
+    trait :completed do
+      status { "completed" }
+      start_date { 1.year.ago }
+      expiry_date { 6.months.ago }
+      payment_due_date { 6.months.ago }
+    end
+
+    # Date-based traits (keeping for backward compatibility)
     trait :expiring_soon do
       expiry_date { 10.days.from_now }
     end
@@ -14,12 +42,6 @@ FactoryBot.define do
     trait :expiring_today do
       expiry_date { Date.current }
     end
-
-  trait :expired do
-    start_date { 1.year.ago }
-    expiry_date { 1.day.ago }
-    payment_due_date { 11.months.ago }
-  end
 
     trait :expiring_in_3_days do
       expiry_date { 3.days.from_now }

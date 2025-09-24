@@ -18,15 +18,7 @@ class Api::V1::AuthController < ApplicationController
         }
       }, status: :created
     else
-      render json: {
-        errors: user.errors.full_messages.map do |message|
-          {
-            status: "422",
-            title: "Validation Error",
-            detail: message
-          }
-        end
-      }, status: :unprocessable_entity
+      render json: ErrorSerializer.render_error(user, "422"), status: :unprocessable_entity
     end
   end
 
@@ -49,15 +41,7 @@ class Api::V1::AuthController < ApplicationController
         }
       }
     else
-      render json: {
-        errors: [
-          {
-            status: "401",
-            title: "Unauthorized",
-            detail: "Invalid email or password"
-          }
-        ]
-      }, status: :unauthorized
+      render json: ErrorSerializer.render_error("Invalid email or password", "401"), status: :unauthorized
     end
   end
 
